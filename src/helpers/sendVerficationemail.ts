@@ -32,7 +32,7 @@ export async function sendVerificationEmail(
     `;
 
     await transporter.sendMail({
-        from: process.env.EMAIL_USER,
+      from: process.env.EMAIL_USER,
       to: email,
       subject: "Verification Code - MYSTRYMSG",
       html:htmlContent,

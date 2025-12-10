@@ -75,7 +75,7 @@ export async function POST(request:NextRequest){
     return NextResponse.json({
         success:true,
         message:"user registered successfully please verify email"
-    },{status:400})
+    },{status:200})
         
     } catch (error) {
         console.log('Error while registering',error);

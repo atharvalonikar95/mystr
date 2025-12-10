@@ -10,36 +10,51 @@ import { Form, FormField, FormItem, FormControl, FormMessage } from "@/component
 import { signUpSchema } from '@/Schemas/signUpSchema';
 import axios, { AxiosError } from 'axios';
 import { ApiResponse } from '@/types/ApiResponse';
-import { signInSchema } from '@/Schemas/signInSchema';
-import { signIn } from 'next-auth/react';
+import { useDebounceCallback } from 'usehooks-ts';
 
-export default function Component() {
-    const router = useRouter();
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showPass, setShowPass] = useState(false);
+const SignUp = () => {
+    const router = useRouter(); 
+    const [username, setUsername] = useState('') 
+    const [usernameMessage, setUsernameMessage] = useState('') 
+    const [isCheckingUsername, setIsCheckingUsername] = useState(false) 
+    const [isSubmitting, setIsSubmitting] = useState(false); 
+    const debounced= useDebounceCallback(setUsername, 500);
+    const [showPass,setShowPass]=useState(false);
 
-
-    const form = useForm<z.infer<typeof signInSchema>>({
-        resolver: zodResolver(signInSchema),
+    const form = useForm<z.infer<typeof signUpSchema>>({
+        resolver: zodResolver(signUpSchema),
         defaultValues: {
-            // username: '',
-            identifier: '',
+            username: '',
+            email: '',
             password: ''
         }
     });
 
-    const onSubmit = async (data: z.infer<typeof signInSchema>) => {
+    const checkUsernameUnique = async () => {
+        if (username) {
+            setIsCheckingUsername(true)
+            setUsernameMessage('')
+
+            try {
+                const response = await axios.get(`/api/checkUsernameUnique?username=${username}`)
+                console.log(response)
+                setUsernameMessage(response.data.message)
+            } catch (error) {
+                const axiosError = error as AxiosError<ApiResponse>;
+                setUsernameMessage(axiosError.response?.data.message ?? 'error while checking')
+            }
+        }
+    }
+    useEffect(()=>{
+        checkUsernameUnique()
+    },[username])
+
+    const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
         try {
             setIsSubmitting(true);
-            const response = await signIn('credentials',{redirect:false,identifier:data.identifier,password:data.password});
-            console.log(response);
-            if(response?.error){
-                alert(response.error)
-            }
-            if(response?.url){
-                router.replace('/dashboard')
-            }
-            // router.replace(`/home`);
+            const response= await axios.post<ApiResponse>('/api/signUp', data);
+            console.log(response)
+            router.replace(`/verify/${username}`);
         } catch (error) {
             console.log(error);
             const axiosError = error as AxiosError<ApiResponse>;
@@ -48,6 +63,7 @@ export default function Component() {
             setIsSubmitting(false);
         }
     };
+
 
     return (
         <div className="w-full min-h-screen flex items-center justify-center p-4">
@@ -64,9 +80,9 @@ export default function Component() {
                     </h4>
 
                     <button
-                        onClick={() => router.push('/signup')}
+                        onClick={() => router.push('/signin')}
                         className="w-40 h-12 border border-white rounded-md">
-                        Sign Up
+                        Sign In
                     </button>
                 </div>
 
@@ -92,18 +108,43 @@ export default function Component() {
                             className="w-full md:w-[70%] flex flex-col gap-4"
                         >
 
-                            {/* Email */}
+                            {/* Username */}
                             <FormField
                                 control={form.control}
-                                name="identifier"
+                                name="username"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormControl>
                                             <InputGroup className="h-12 rounded-none">
                                                 <InputGroupInput
                                                     {...field}
-                                                    type="text"
-                                                    placeholder="Enter your email or username"
+                                                    placeholder="Enter your user name"
+                                                    onChange={(e)=>{field.onChange(e)
+                                                        debounced(e.target.value)
+                                                    }}
+                                                />
+                                                <InputGroupAddon>
+                                                    <User2Icon />
+                                                </InputGroupAddon>
+                                            </InputGroup>
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* Email */}
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormControl>
+                                            <InputGroup className="h-12 rounded-none">
+                                                <InputGroupInput
+                                                    {...field}
+                                                    type="email"
+                                                    placeholder="Enter your email"
                                                 />
                                                 <InputGroupAddon>
                                                     <MailIcon />
@@ -125,11 +166,11 @@ export default function Component() {
                                             <InputGroup className="h-12 rounded-none">
                                                 <InputGroupInput
                                                     {...field}
-                                                    type={showPass ? `text` : `password`}
+                                                    type={showPass?`text`:`password`}
                                                     placeholder="Enter your password"
                                                 />
-                                                <InputGroupAddon onClick={() => setShowPass(curr => !curr)} >
-                                                    {showPass ? <EyeIcon /> : <EyeOff />}
+                                                <InputGroupAddon onClick={()=>setShowPass(curr=>!curr)} >
+                                                    {showPass ? <EyeIcon/> :<EyeOff />}
                                                 </InputGroupAddon>
                                             </InputGroup>
                                         </FormControl>
@@ -144,7 +185,7 @@ export default function Component() {
                                 disabled={isSubmitting}
                                 className="w-40 bg-[#4CBF98] h-12 text-white rounded-md self-center"
                             >
-                                {isSubmitting ? "Signing In..." : "Sign In"}
+                                {isSubmitting ? "Signing Up..." : "Sign Up"}
                             </button>
 
                         </form>
@@ -153,4 +194,13 @@ export default function Component() {
             </div>
         </div>
     );
-}
+};
+
+export default memo(SignUp);
+
+
+
+
+
+
+

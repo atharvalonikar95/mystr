@@ -34,7 +34,7 @@ export async function GET(request:NextRequest){
 
         if(existingVerifiedUser){
             return NextResponse.json({
-                message:"Uername already taken",
+                message:"Username already taken",
                 success:false
             },{status:500})
 
@@ -43,7 +43,7 @@ export async function GET(request:NextRequest){
         return NextResponse.json({
             message:"Username is  Unique ",
             success:true
-        },{status:400})
+        },{status:200})
 
     } catch (error) {
         console.log('Error checking username', error)

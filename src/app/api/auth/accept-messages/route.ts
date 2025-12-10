@@ -1,9 +1,10 @@
 import dbConnect from "@/lib/dbConnect";
 import { getServerSession, User as USER } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../options";
+// import { authOptions } from "../options";
 import User from "@/model/User";
 import { success } from "zod";
+import { authOptions } from "../[...nextauth]/options";
 
 export async function POST(request: NextRequest) {
     await dbConnect();
