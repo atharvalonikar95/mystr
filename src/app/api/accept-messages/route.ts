@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 // import { authOptions } from "../options";
 import User from "@/model/User";
 import { success } from "zod";
-import { authOptions } from "../[...nextauth]/options";
+import { authOptions } from "../auth/[...nextauth]/options";
 
 export async function POST(request: NextRequest) {
     await dbConnect();

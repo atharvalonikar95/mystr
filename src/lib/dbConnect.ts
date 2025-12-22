@@ -19,7 +19,7 @@ export default async function dbConnect(): Promise<void>{
        connection.isConnected=db.connections[0].readyState
 
        console.log("DB Connected Successfully");
-       console.log(db);
+    //    console.log(db);
         
     } catch (error) {
         console.log("DB connection Failed",error);

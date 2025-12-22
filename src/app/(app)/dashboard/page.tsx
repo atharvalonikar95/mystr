@@ -1,8 +1,15 @@
+'use client'
+import MessageCard from '@/components/MessageCard'
+import { Button } from '@/components/ui/button'
+import { Switch } from '@/components/ui/switch'
 import { Message } from '@/model/Message'
 import { acceptMessageSchema } from '@/Schemas/acceptMessageSchema'
 import { ApiResponse } from '@/types/ApiResponse'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Separator } from '@radix-ui/react-separator'
 import axios, { AxiosError } from 'axios'
+import { Loader2, RefreshCcw } from 'lucide-react'
+import { User } from 'next-auth'
 import { useSession } from 'next-auth/react'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -46,7 +53,9 @@ const Dashboard = () => {
     setIsSwitchLoading(false);
     try {
       const response = await axios.get<ApiResponse>('/api/get-messages')
-      setMessages(response.data.messages || [])
+      console.log(response);
+      setMessages(response.data.message as Message[] || [])
+      console.log(messages)
 
       if (refresh) {
         alert('showing latest messages Refreshed')
@@ -54,10 +63,10 @@ const Dashboard = () => {
 
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>
-      alert(axiosError.response?.data.message)
+      // alert(axiosError.response?.data.message)
     }
     finally {
-      setIsLoading(true);
+      setIsLoading(false);
       setIsSwitchLoading(false);
     }
   }, [setIsLoading, setMessages])
@@ -87,8 +96,16 @@ const Dashboard = () => {
     }
   }
 
-  if(!session || !session.user){
-    return(
+  const username = session?.user.username;
+  const baseUrl = `${window.location.protocol}//${window.location.host}`
+  const profileUrl = `${baseUrl}/u/${username}`
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(profileUrl);
+    alert(`url copied`)
+  }
+
+  if (!session || !session.user) {
+    return (
       <div>
         please login
       </div>
@@ -96,9 +113,59 @@ const Dashboard = () => {
   }
 
   return (
-    <div>
-      Dashboard
+    <div className='w-full h-screen outline-0 outline-black  '>
+      <p className=' text-green-500 font-semibold text-2xl text-center pt-2 '>Dashboard</p>
+      <div className='w-full flex flex-row '>
+        <div className='w-[50%] h-30 flex flex-col justify-center items-center  outline-0 '>
+          <div className=' w-[80%] outline- '>
+            <h2 className='mb-2 text-green-500 font-semibold text-2xl  '>copy ur unique link</h2>
+          </div>
+          <div className=' w-[80%] outline-1 py-2  flex flex-row items-center justify- '>
+            <input className=' outline-0 w-[70%] p-1 text-center ' type="text" value={profileUrl} disabled />
+            <Button className='w-fit' onClick={copyToClipboard}>copy url</Button>
+          </div>
+        </div>
+        <div className='w-[50%] h-30 outline-0 flex flex-row items-center gap-5 p-2 '>
+          <Switch className=''
+            {...register('acceptMessages')}
+            checked={acceptMessages}
+            onCheckedChange={handleSwitchChange}
+            disabled={isSwitchLoading}
+          />
+          <span>
+            Accept Messages : {acceptMessages ? 'On' : 'off'}
+          </span>
+          {/* <Separator /> */}
+          <Button>
+            {
+              isLoading ? (
+                <Loader2 className='h-4 w-4 animate-spin' />
+              ) : (
+                <RefreshCcw className='h-4 w-4 ' />
+              )
+            }
+          </Button>
+        </div>
+      </div>
+      <div className='<div className="w-full h-[60vh] sm:m-16 grid grid-cols-3 gap-4 ">'>
+        {
+          messages.length > 0 ? (
+
+            messages.map((message, index) => (
+              <MessageCard
+                key={message.id}
+                message={message}
+                onMessageDelete={handleDeleteMessage}
+              />
+            ))
+          ) : (
+            <p> No message to display</p>
+          )
+        }
+      </div>
+
     </div>
+
   )
 }
 

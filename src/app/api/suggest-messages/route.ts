@@ -1,32 +1,50 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-import { streamText } from "ai";
 
 export const runtime = "edge";
+
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
 export async function POST(req: NextRequest) {
     try {
-        const { messages } = await req.json();
+        const { prompt } = await req.json();
 
-        const result = await streamText({
-            model: "gpt-4o-mini",  // <-- MUST be a string
-            messages,
-            // api: openai,           // <-- tell Vercel AI SDK to use your OpenAI client
+        if (typeof prompt !== "string" || !prompt.trim()) {
+            return NextResponse.json(
+                { error: "`prompt` must be a non-empty string" },
+                { status: 400 }
+            );
+        }
+
+        const response = await openai.responses.create({
+            model: "gpt-4o-mini",
+            input: `
+Generate exactly 3 short responses.
+Each response must be on a new line.
+Do not number them.
+
+Prompt:
+${prompt}
+      `,
         });
 
-        return result.toTextStreamResponse();
+        const text = response.output_text;
+
+        // Convert into array of 3 messages
+        const messages = text
+            .split("\n")
+            .map(m => m.trim())
+            .filter(Boolean)
+            .slice(0, 3);
+
+        return NextResponse.json({ messages });
     } catch (error) {
-        if(error  instanceof OpenAI.APIError){
-            const {name,status,headers,message}=error
-            return NextResponse.json({
-                name,status,headers,message
-            },{status})
-        }else{
-            console.error("an unexpected error",error)
-            throw error
-        }
+        console.error("Unexpected error:", error);
+        return NextResponse.json(
+            { error: "Internal Server Error" },
+            { status: 500 }
+        );
     }
 }

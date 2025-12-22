@@ -25,10 +25,12 @@ export async function POST(request: NextRequest) {
         }
         const newMessage = { content, createdAt: new Date() }
         user.messages.push(newMessage as Message)
+        await user.save();
+
         return NextResponse.json({
             success: true,
             message: "message sent successfully"
-        }, { status: 500 })
+        }, { status: 200 })
 
     } catch (error) {
         console.log('unexpected error', error)
