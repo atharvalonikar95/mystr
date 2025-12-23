@@ -21,13 +21,13 @@ export async function POST(req: NextRequest) {
         const response = await openai.responses.create({
             model: "gpt-4o-mini",
             input: `
-Generate exactly 3 short responses.
-Each response must be on a new line.
-Do not number them.
+                Generate exactly 3 short responses.
+                Each response must be on a new line.
+                Do not number them.
 
-Prompt:
-${prompt}
-      `,
+                Prompt:
+                ${prompt}
+                    `,
         });
 
         const text = response.output_text;
