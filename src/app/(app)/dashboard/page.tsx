@@ -41,9 +41,10 @@ const Dashboard = () => {
       setIsSwitchLoading(true);
       try {
         const response = await axios.get<ApiResponse>('/api/accept-messages');
-        setValue('acceptMessages', response?.data?.isAcceptingMessages)
+        setValue('acceptMessages', response.data?.isAcceptingMessages!)
       } catch (error) {
         const axiosError = error as AxiosError<ApiResponse>
+        console.log(axiosError)
       }
     }, [])
 
@@ -54,7 +55,7 @@ const Dashboard = () => {
     try {
       const response = await axios.get<ApiResponse>('/api/get-messages')
       console.log(response);
-      setMessages(response.data.message as Message[] || [])
+      setMessages(response.data.messages ?? [])
       console.log(messages)
 
       if (refresh) {
@@ -63,7 +64,7 @@ const Dashboard = () => {
 
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>
-      // alert(axiosError.response?.data.message)
+      console.log(axiosError.response?.data)
     }
     finally {
       setIsLoading(false);
@@ -92,11 +93,12 @@ const Dashboard = () => {
 
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>
-      alert(axiosError.response?.data.message)
+      console.log(axiosError.response?.data)
     }
   }
 
-  const username = session?.user.username;
+  const username = session?.user.username || session?.user.name?.split(' ')[0].toLowerCase();
+  // console.log(session?.user.)
   const baseUrl = `${window.location.protocol}//${window.location.host}`
   const profileUrl = `${baseUrl}/u/${username}`
   const copyToClipboard = () => {
@@ -153,7 +155,7 @@ const Dashboard = () => {
 
             messages.map((message, index) => (
               <MessageCard
-                key={message.id}
+                key={index}
                 message={message}
                 onMessageDelete={handleDeleteMessage}
               />

@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
 
     const session = await getServerSession(authOptions)
     const user: USER = session?.user as USER
-
     if (!session || !session.user) {
         return NextResponse.json({
             success: false,
@@ -20,11 +19,16 @@ export async function GET(request: NextRequest) {
         )
     }
 
-    const userId = new mongoose.Types.ObjectId(user._id);
+    const userId = 
+    user._id;
+        const objectId = mongoose.Types.ObjectId.isValid(userId!)
+        ? new mongoose.Types.ObjectId(userId)
+        : userId;
+    // new mongoose.Types.ObjectId(user._id);
 
     try {
         const user = await User.aggregate([
-            { $match: { _id: userId } },
+            { $match: { _id: objectId } },
             { $unwind: '$messages' },
             { $sort: { 'messages.createdAt': -1 } },
             { $group: { _id: '$_id', messages: { $push: '$messages' } } }
@@ -33,13 +37,14 @@ export async function GET(request: NextRequest) {
         if (!user || user.length === 0) {
             return NextResponse.json({
                 success: false,
+                session,
                 message: "User not found "
             }, { status: 401 }
             )
         }
         return NextResponse.json({
             success: true,
-            message: user[0].messages
+            messages: user[0].messages
         }, { status: 200 }
         )
 

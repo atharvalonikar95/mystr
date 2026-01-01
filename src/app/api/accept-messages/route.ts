@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
         }, { status: 401 }
         )
     }
+    // console.log(session)
 
     const userId = user._id;
     const { acceptMessages } = await request.json();
@@ -40,9 +41,10 @@ export async function POST(request: NextRequest) {
         }
     } catch (error) {
 
-        console.log('failed to update user status to accept messages')
+        // console.log('failed to update user status to accept messages')
         return NextResponse.json({
             success: false,
+            // session,
             message: "failed to update user status to accept messages"
         }, { status: 401 }
         )

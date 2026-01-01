@@ -18,7 +18,7 @@ const Navbar = () => {
                 {session ? (
                     <div className="flex items-center gap-4">
                         <span className="font-medium">
-                            Welcome, {user?.username || user?.email}
+                            Welcome, {user?.name || user?.username || user?.email}
                         </span>
                         <Button className=' bg-[#4CBF98]' onClick={() => signOut()}>Logout</Button>
                     </div>

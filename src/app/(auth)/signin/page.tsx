@@ -78,9 +78,9 @@ export default function Component() {
 
                     {/* Social buttons */}
                     <div className="w-full flex gap-4 justify-center">
-                        <button className="w-12 h-12 text-xl font-bold rounded-full border border-gray-300">f</button>
-                        <button className="w-12 h-12 text-xl font-bold rounded-full border border-gray-300">G+</button>
-                        <button className="w-12 h-12 text-xl font-bold rounded-full border border-gray-300">in</button>
+                        <button  className="w-12 h-12 text-xl font-bold rounded-full border border-gray-300 cursor-pointer">f</button>
+                        <button onClick={()=>signIn("google")} className="w-12 h-12 text-xl font-bold rounded-full border border-gray-300 cursor-pointer">G+</button>
+                        <button onClick={()=>signIn("linkedin")}className="w-12 h-12 text-xl font-bold rounded-full border border-gray-300 cursor-pointer">in</button>
                     </div>
 
                     <p className="text-gray-400">or signup by email & password :</p>
