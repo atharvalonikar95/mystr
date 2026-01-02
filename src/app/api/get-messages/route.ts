@@ -19,9 +19,8 @@ export async function GET(request: NextRequest) {
         )
     }
 
-    const userId = 
-    user._id;
-        const objectId = mongoose.Types.ObjectId.isValid(userId!)
+    const userId = user._id;
+    const objectId = mongoose.Types.ObjectId.isValid(userId!)
         ? new mongoose.Types.ObjectId(userId)
         : userId;
     // new mongoose.Types.ObjectId(user._id);
@@ -51,7 +50,7 @@ export async function GET(request: NextRequest) {
     } catch (error) {
         return NextResponse.json({
             success: false,
-            message: 'unexpected error',error
+            message: 'unexpected error', error
         }, { status: 500 }
         )
     }

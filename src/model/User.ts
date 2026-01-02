@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
-import { Message } from "./Message";
+import {Message,MessageSchema} from "./Message";
 
 // export type ProviderType = "credentials" | "google" | "linkedin";
 
@@ -68,7 +68,7 @@ const Userschema: Schema<User> = new mongoose.Schema(
     },
 
     messages: {
-      type: [],
+      type: [MessageSchema],
       default: [],
     },
   },

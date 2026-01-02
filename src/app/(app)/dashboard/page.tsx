@@ -117,17 +117,17 @@ const Dashboard = () => {
   return (
     <div className='w-full h-screen outline-0 outline-black  '>
       <p className=' text-green-500 font-semibold text-2xl text-center pt-2 '>Dashboard</p>
-      <div className='w-full flex flex-row '>
-        <div className='w-[50%] h-30 flex flex-col justify-center items-center  outline-0 '>
-          <div className=' w-[80%] outline- '>
-            <h2 className='mb-2 text-green-500 font-semibold text-2xl  '>copy ur unique link</h2>
+      <div className='w-full flex flex-col outline-  md:flex-row '>
+        <div className='md:w-[50%] h-30 flex flex-col justify-center items-center  outline-0 '>
+          <div className=' md:w-[80%] w-full px-2 outline- '>
+            <h2 className='mb-2 text-green-500 font-bold sm:font-semibold md:text-2xl text-md capitalize '>copy your unique link</h2>
           </div>
-          <div className=' w-[80%] outline-1 py-2  flex flex-row items-center justify- '>
-            <input className=' outline-0 w-[70%] p-1 text-center ' type="text" value={profileUrl} disabled />
-            <Button className='w-fit' onClick={copyToClipboard}>copy url</Button>
+          <div className='w-full md:w-[80%] outline- p-2  flex flex-row items-center justify- '>
+            <input className=' outline-0 w-full md:w-[70%] p-1 text-center ' type="text" value={profileUrl} disabled />
+            <Button className='md:w-fit' onClick={copyToClipboard}>copy url</Button>
           </div>
         </div>
-        <div className='w-[50%] h-30 outline-0 flex flex-row items-center gap-5 p-2 '>
+        <div className='md:w-[50%] md:h-30 outline- flex flex-row items-center justify-center gap-5 p-2 '>
           <Switch className=''
             {...register('acceptMessages')}
             checked={acceptMessages}
@@ -149,7 +149,7 @@ const Dashboard = () => {
           </Button>
         </div>
       </div>
-      <div className='<div className="w-full h-[60vh] sm:m-16 grid grid-cols-3 gap-4 ">'>
+      <div className='<div className="w-full h-[60vh]  grid sm:grid-cols-2 md:grid-cols-2  lg:grid-cols-3  p-10 gap-4 ">'>
         {
           messages.length > 0 ? (
 
