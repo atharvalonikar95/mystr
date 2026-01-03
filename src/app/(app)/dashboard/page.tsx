@@ -2,9 +2,10 @@
 import MessageCard from '@/components/MessageCard'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { Message } from '@/model/Message'
+// import { Message } from '@/model/Message'
 import { acceptMessageSchema } from '@/Schemas/acceptMessageSchema'
 import { ApiResponse } from '@/types/ApiResponse'
+import { MessageDTO } from '@/types/messageDTO'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Separator } from '@radix-ui/react-separator'
 import axios, { AxiosError } from 'axios'
@@ -17,14 +18,26 @@ import { useForm } from 'react-hook-form'
 
 
 const Dashboard = () => {
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<MessageDTO[]>([])
   const [isLoading, setIsLoading] = useState(false);
   const [isSwitchLoading, setIsSwitchLoading] = useState(false);
+  const [profileUrl, setProfileUrl] = useState<string>("");
+
 
   const handleDeleteMessage = (messageId: string) => {
     setMessages(messages.filter((message) => message._id !== messageId))
 
   }
+  const handleEditContent = (messageId: string, newContent: string) => {
+    setMessages((prevMessages) =>
+      prevMessages.map((message) =>
+        message._id === messageId
+          ? { ...message, content: newContent }
+          : message
+      )
+    );
+  };
+
 
   const { data: session } = useSession()
 
@@ -97,14 +110,20 @@ const Dashboard = () => {
     }
   }
 
-  const username = session?.user.username || session?.user.name?.split(' ')[0].toLowerCase();
-  // console.log(session?.user.)
-  const baseUrl = `${window.location.protocol}//${window.location.host}`
-  const profileUrl = `${baseUrl}/u/${username}`
   const copyToClipboard = () => {
     navigator.clipboard.writeText(profileUrl);
-    alert(`url copied`)
+    alert(`url copied`);
   }
+  useEffect(() => {
+    if (!session?.user) return;
+
+    const username =
+      session.user.username ||
+      session.user.name?.split(" ")[0].toLowerCase();
+
+    const baseUrl = `${window.location.protocol}//${window.location.host}`;
+    setProfileUrl(`${baseUrl}/u/${username}`);
+  }, [session]);
 
   if (!session || !session.user) {
     return (
@@ -149,7 +168,7 @@ const Dashboard = () => {
           </Button>
         </div>
       </div>
-      <div className='<div className="w-full h-[60vh]  grid sm:grid-cols-2 md:grid-cols-2  lg:grid-cols-3  p-10 gap-4 ">'>
+      <div className='<div className="w-full  items-stretch  grid sm:grid-cols-2 md:grid-cols-2  lg:grid-cols-3  p-10 gap-4 ">'>
         {
           messages.length > 0 ? (
 
@@ -158,6 +177,7 @@ const Dashboard = () => {
                 key={index}
                 message={message}
                 onMessageDelete={handleDeleteMessage}
+                onMessageEdit={handleEditContent}
               />
             ))
           ) : (

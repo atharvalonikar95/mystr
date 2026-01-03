@@ -41,9 +41,17 @@ export async function GET(request: NextRequest) {
             }, { status: 401 }
             )
         }
+
+        // ✅ DTO TRANSFORMATION (THE KEY FIX)
+        const messages = user[0].messages.map((msg: any) => ({
+            _id: msg._id.toString(),
+            content: msg.content,
+            createdAt: msg.createdAt,
+        }));
+
         return NextResponse.json({
             success: true,
-            messages: user[0].messages
+            messages: messages
         }, { status: 200 }
         )
 

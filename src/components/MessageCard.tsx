@@ -23,15 +23,16 @@ import {
 import { Button } from './ui/button';
 import { Edit2Icon, X } from 'lucide-react';
 import axios from 'axios';
-import { Message } from '@/model/Message';
+import { MessageDTO } from '@/types/messageDTO';
 
 type messageProps = {
-  message: Message;
+  message: MessageDTO;
   onMessageDelete: (messageId: any) => void
+  onMessageEdit: (messageId: any, newContent: string) => void;
 
 }
 
-const MessageCard = ({ message, onMessageDelete }: messageProps) => {
+const MessageCard = ({ message, onMessageDelete, onMessageEdit }: messageProps) => {
 
   const [editmessage, setEditMessage] = useState(message.content)
 
@@ -41,15 +42,21 @@ const MessageCard = ({ message, onMessageDelete }: messageProps) => {
     onMessageDelete(message?._id);
   }
 
+  const handleEditContent = async () => {
+    const response = await axios.put(`/api/edit-messages/${message?._id}`, { content: editmessage })
+    console.log(response.data);
+    onMessageEdit(message?._id, editmessage);
+  }
+
   return (
-    <Card className='w-full h-fit '>
+    <Card className='w-full h-full flex flex-col'>
       <CardHeader className='outline-'>
         <CardTitle>{message.content}</CardTitle>
         <CardDescription>{message.createdAt.toString()}</CardDescription>
         <CardAction> Action</CardAction>
       </CardHeader>
       {/* <CardContent>      </CardContent> */}
-      <div className='flex flex-row items-center justify-around gap- px-'>
+      <div className=' mt-auto flex flex-row items-center justify-around gap- px-'>
         {/* delete button */}
         <AlertDialog  >
           <AlertDialogTrigger asChild >
@@ -87,7 +94,7 @@ const MessageCard = ({ message, onMessageDelete }: messageProps) => {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction >Save</AlertDialogAction>
+              <AlertDialogAction onClick={() => handleEditContent()}>Save</AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
