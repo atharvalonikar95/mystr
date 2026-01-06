@@ -23,11 +23,13 @@ const Dashboard = () => {
   const [isSwitchLoading, setIsSwitchLoading] = useState(false);
   const [profileUrl, setProfileUrl] = useState<string>("");
 
-
+  // this function is for rendering messages after deletion of particular msg
   const handleDeleteMessage = (messageId: string) => {
     setMessages(messages.filter((message) => message._id !== messageId))
 
   }
+
+  //this function is to render the messages after updation of a msg
   const handleEditContent = (messageId: string, newContent: string) => {
     setMessages((prevMessages) =>
       prevMessages.map((message) =>

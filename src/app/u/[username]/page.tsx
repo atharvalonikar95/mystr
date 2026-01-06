@@ -23,8 +23,6 @@ import {
 import { InputGroup, InputGroupInput } from '@/components/ui/input-group'
 import { messageSchema } from '@/Schemas/messageSchema'
 import { Button } from '@/components/ui/button'
-import { Divide } from 'lucide-react'
-import { Input } from '@/components/ui/input'
 import { suggestionTextSchema } from '@/Schemas/suggestionTextSchema'
 
 const Page = () => {

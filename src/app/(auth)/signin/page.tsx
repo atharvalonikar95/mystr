@@ -73,7 +73,7 @@ export default function Component() {
                 {/* Right Section */}
                 <div className="w-full md:w-[60%] p-6 flex flex-col justify-center items-center gap-6">
                     <h2 className="text-3xl md:text-4xl font-bold text-[#3AAF9F]">
-                        Create Account
+                        Sign In 
                     </h2>
 
                     {/* Social buttons */}
@@ -83,7 +83,7 @@ export default function Component() {
                         <button onClick={()=>signIn("linkedin")}className="w-12 h-12 text-xl font-bold rounded-full border border-gray-300 cursor-pointer">in</button>
                     </div>
 
-                    <p className="text-gray-400">or signup by email & password :</p>
+                    <p className="text-gray-400">or signin by email & password :</p>
 
                     {/* FORM */}
                     <Form {...form}>
