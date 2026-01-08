@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, models } from "mongoose";
 import {Message,MessageSchema} from "./Message";
 
 // export type ProviderType = "credentials" | "google" | "linkedin";
@@ -13,6 +13,7 @@ export interface User extends Document {
     isAcceptingMessage: boolean;
     messages: Message[];
     provider: "credentials" | "google" | "linkedin";
+    role:string
 
 }
 
@@ -71,9 +72,15 @@ const Userschema: Schema<User> = new mongoose.Schema(
       type: [MessageSchema],
       default: [],
     },
+
+    role:{
+      type:String,
+      default:'user'
+    }
   },
   { timestamps: true }
 );
 
 
-export default mongoose.models.User as mongoose.Model<User> || mongoose.model<User>('User', Userschema);
+
+export default mongoose.models?.User ?? mongoose.model<User>('User', Userschema);

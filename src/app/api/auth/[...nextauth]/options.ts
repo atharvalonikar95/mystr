@@ -89,7 +89,7 @@ export const authOptions: NextAuthOptions = {
 
             if (user) {
                 const u = user as any;
-
+                token.role = u.role
                 token.sub = u._id.toString(); // REQUIRED by NextAuth
                 token._id = u._id.toString();
                 token.username = u.username;
@@ -97,10 +97,15 @@ export const authOptions: NextAuthOptions = {
                 token.isAcceptingMessage = u.isAcceptingMessages;
 
             }
+            if (!token.role && token.sub) {
+                const dbUser = await User.findById(token.sub).select("role");
+                token.role = dbUser?.role;
+            }
             return token;
         },
         async session({ session, token }) {
             if (token) {
+                session.user.role = token.role;
                 session.user._id = token.sub!
                 session.user.username = token.username as string
                 session.user.isVerified = token.isVerified as boolean
@@ -121,6 +126,8 @@ export const authOptions: NextAuthOptions = {
                         provider: account?.provider, // must be set before saving
                         isVerified: true,
                         isAcceptingMessages: true,
+                        role: "user",
+
                     });
                 }
                 // user._id = existingUser?._id?.toString(); // 🔥 CRITICAL
